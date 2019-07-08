@@ -1,0 +1,830 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Code &#8212; MAH - Mutual Authentication for Humans 1.0.1
+ documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="code">
+<h1>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-mah">
+<span id="mah"></span><h2>mah<a class="headerlink" href="#module-mah" title="Permalink to this headline">¶</a></h2>
+<p>This file contains the flask app object and describes the main entry points
+to the web application and maps these to urls.</p>
+<dl class="class">
+<dt id="mah.MAH">
+<em class="property">class </em><code class="descclassname">mah.</code><code class="descname">MAH</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.MAH" title="Permalink to this definition">¶</a></dt>
+<dd><p>MAH-specific Flask object. Installs the SeaSurf instance under the csrf
+attribute, and initialises configuration and logging.</p>
+<dl class="method">
+<dt id="mah.MAH.route">
+<code class="descname">route</code><span class="sig-paren">(</span><em>rule</em>, <em>**options</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.MAH.route" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modified route decorator that wraps all routes in an error handling
+routing to centralise logging and error handling.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mah.MAH.unauthenticated_route">
+<code class="descname">unauthenticated_route</code><span class="sig-paren">(</span><em>rule</em>, <em>**options</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.MAH.unauthenticated_route" title="Permalink to this definition">¶</a></dt>
+<dd><p>Special route decorator that marks this route as unauthenticated.
+Handlers for these routes must be public, or handle authentication
+checks themselves.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-mah.verification">
+<span id="mah-verification"></span><h2>mah.verification<a class="headerlink" href="#module-mah.verification" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="mah.verification.Verification">
+<em class="property">class </em><code class="descclassname">mah.verification.</code><code class="descname">Verification</code><span class="sig-paren">(</span><em>source_uid</em>, <em>dest_uid</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.verification.Verification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a one-way authentication between two users. An authentication
+consists of a username/uid of the authenticator (referred to as the
+“source”) and the username/uid of the authenticated party (destination).</p>
+<p>This class generates a short, human manageable shared secret and puts a
+short (ideally around 5 - 15 minutes) life span on the authentication.
+The shared secret is a pseudo random hash truncated to a reasonable
+(human memorable) configurable length (default: 6).</p>
+<p>The expiry time is set a configurable number of seconds into the future
+(default 300).</p>
+<p>This could be prone to collisions, but a given a reasonable length of the
+shared secret, a short expiry time and the fact authentication occurs
+between humans it provides a reasonable solution.</p>
+<dl class="classmethod">
+<dt id="mah.verification.Verification.all">
+<em class="property">classmethod </em><code class="descname">all</code><span class="sig-paren">(</span><em>uid</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.verification.Verification.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve all authentication objects for which the uid matches either
+the source or destination, regardless of expiry time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>src_uid</strong> – the source user id</li>
+<li><strong>dst_uid</strong> – the destination user id.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">a list of authentication objects or None.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.verification.Verification.auth_id">
+<code class="descname">auth_id</code><em class="property"> = Column(None, Integer(), table=None, primary_key=True, nullable=False, default=Sequence('user_id_seq'))</em><a class="headerlink" href="#mah.verification.Verification.auth_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifer for the authentication. This is never displayed to
+the end user and is automatically incremented as authentications are
+added.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="mah.verification.Verification.by_dst">
+<em class="property">classmethod </em><code class="descname">by_dst</code><span class="sig-paren">(</span><em>uid</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.verification.Verification.by_dst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve non-expired authentication objects with a given destination uid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>src_uid</strong> – the source user id</li>
+<li><strong>dst_uid</strong> – the destination user id.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">a list of authentication objects or None.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="mah.verification.Verification.by_id">
+<em class="property">classmethod </em><code class="descname">by_id</code><span class="sig-paren">(</span><em>auth_id</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.verification.Verification.by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retreive the authentication object which matches the unique id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>src_uid</strong> – the source user id</li>
+<li><strong>dst_uid</strong> – the destination user id.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">a single authentication object or None.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="mah.verification.Verification.by_src">
+<em class="property">classmethod </em><code class="descname">by_src</code><span class="sig-paren">(</span><em>uid</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.verification.Verification.by_src" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve non-expired authentication objects with a given source uid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>src_uid</strong> – the source user id</li>
+<li><strong>dst_uid</strong> – the destination user id.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">a list of authentication objects or None.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.verification.Verification.dest_name">
+<code class="descname">dest_name</code><em class="property"> = Column(None, String(length=200), table=None, nullable=False)</em><a class="headerlink" href="#mah.verification.Verification.dest_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The human readable name of the source of the authentication. This is
+looked up from the staff directory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.verification.Verification.dest_uid">
+<code class="descname">dest_uid</code><em class="property"> = Column(None, String(length=32), table=None, nullable=False)</em><a class="headerlink" href="#mah.verification.Verification.dest_uid" title="Permalink to this definition">¶</a></dt>
+<dd><p>The username/uid of the person who was authenticated.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="mah.verification.Verification.exists">
+<em class="property">static </em><code class="descname">exists</code><span class="sig-paren">(</span><em>src_uid</em>, <em>dst_uid</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.verification.Verification.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the source and destination of a authentication, check if an
+authentication already exists and if it does, return true.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>src_uid</strong> – the source user id</li>
+<li><strong>dst_uid</strong> – the destination user id.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.verification.Verification.expiry">
+<code class="descname">expiry</code><em class="property"> = Column(None, DateTime(), table=None, nullable=False, default=ColumnDefault(datetime.datetime(2019, 7, 8, 6, 44, 13, 533642)))</em><a class="headerlink" href="#mah.verification.Verification.expiry" title="Permalink to this definition">¶</a></dt>
+<dd><p>The expiry time of this authentication.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.verification.Verification.expiry_string">
+<code class="descname">expiry_string</code><em class="property"> = ''</em><a class="headerlink" href="#mah.verification.Verification.expiry_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>A user friendly and timezone independent string to represent the time
+before an auth expires. e.g. “20 seconds”, “4 minutes”. This is used to
+improve usability, by not having users exposed to timezone issues,
+where possible. This is not stored in the database, but instead
+calculated when objects are queried.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="mah.verification.Verification.get">
+<em class="property">classmethod </em><code class="descname">get</code><span class="sig-paren">(</span><em>src_uid</em>, <em>dst_uid</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.verification.Verification.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retreive the unexpired authentication object, given a source and a
+destination uid. This function can only ever return 1 or 0 elements.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>src_uid</strong> – the source user id</li>
+<li><strong>dst_uid</strong> – the destination user id.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">a single authentication object or None.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.verification.Verification.nato_code">
+<code class="descname">nato_code</code><em class="property"> = ''</em><a class="headerlink" href="#mah.verification.Verification.nato_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>The authentication strings in the phonetic alphabet (NATO) codes. This
+is not stored in the database, but instead generated when objected are
+queried.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.verification.Verification.reciprocated">
+<code class="descname">reciprocated</code><em class="property"> = Column(None, Boolean(), table=None, nullable=False, default=ColumnDefault(False))</em><a class="headerlink" href="#mah.verification.Verification.reciprocated" title="Permalink to this definition">¶</a></dt>
+<dd><p>A flag to show if the authentication exists in the other direction
+(destination user -&gt; source user). This is primarily used to simplify
+template logic.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.verification.Verification.shared_secret">
+<code class="descname">shared_secret</code><em class="property"> = Column(None, String(length=128), table=None, nullable=False)</em><a class="headerlink" href="#mah.verification.Verification.shared_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>A short, (relatively) unguessable string represent the shared secret in
+this authentication.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.verification.Verification.source_name">
+<code class="descname">source_name</code><em class="property"> = Column(None, String(length=200), table=None, nullable=False)</em><a class="headerlink" href="#mah.verification.Verification.source_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The human readable name of the source. This is looked up from the staff
+directory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.verification.Verification.source_uid">
+<code class="descname">source_uid</code><em class="property"> = Column(None, String(length=32), table=None, nullable=False)</em><a class="headerlink" href="#mah.verification.Verification.source_uid" title="Permalink to this definition">¶</a></dt>
+<dd><p>The username/uid of the person who initiated the authentication.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-mah.database">
+<span id="mah-database"></span><h2>mah.database<a class="headerlink" href="#module-mah.database" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="mah.database.database">
+<em class="property">class </em><code class="descclassname">mah.database.</code><code class="descname">database</code><a class="headerlink" href="#mah.database.database" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="mah.database.database.Base">
+<code class="descname">Base</code><em class="property"> = None</em><a class="headerlink" href="#mah.database.database.Base" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="mah.database.database.done">
+<em class="property">classmethod </em><code class="descname">done</code><span class="sig-paren">(</span><em>ok=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.database.database.done" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mah.database.database.engine">
+<code class="descname">engine</code><em class="property"> = None</em><a class="headerlink" href="#mah.database.database.engine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="mah.database.database.init">
+<em class="property">classmethod </em><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mah.database.database.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialised the database connection for SQL Alchemy.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.database.database.session">
+<code class="descname">session</code><em class="property"> = None</em><a class="headerlink" href="#mah.database.database.session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-mah.config">
+<span id="mah-config"></span><h2>mah.config<a class="headerlink" href="#module-mah.config" title="Permalink to this headline">¶</a></h2>
+<p>A simple, shared configuration configuration object based on the standard
+python <a class="reference external" href="http://docs.python.org/library/configparser.html">ConfigParser</a>.</p>
+<dl class="docutils">
+<dt><strong>config</strong></dt>
+<dd><p class="first">Global configuration object. Can be treated as a dictionary with
+case-insensitive keys, or as an object with attributes that correspond to
+configuration sections. For instance, the following are equivalent:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;Application&#39;</span><span class="p">]</span>
+<span class="n">config</span><span class="p">[</span><span class="s1">&#39;application&#39;</span><span class="p">]</span>
+<span class="n">config</span><span class="o">.</span><span class="n">application</span>
+<span class="n">config</span><span class="o">.</span><span class="n">Application</span>
+</pre></div>
+</div>
+<p>The value of which can be another configuration object or a string, boolean,
+integer, or float value, or a list of strings, booleans, integers or floats.</p>
+<p class="last">See the <a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> section for details.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="module-mah.log">
+<span id="mah-log"></span><h2>mah.log<a class="headerlink" href="#module-mah.log" title="Permalink to this headline">¶</a></h2>
+<p>A custom logger for the MAH application. This was implemented to be easily
+used by all parts of the mah package, without having to pass around the
+flask.app.logger object and to seperate the log formatting and
+configuration features.</p>
+<p>Usually, this will be used like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mah.log</span> <span class="k">import</span> <span class="n">log</span>
+
+<span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;This is a debugging message&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="mah.log.init">
+<code class="descclassname">mah.log.</code><code class="descname">init</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.log.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise the logging system.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> – the logging subsection of the core configuration object,
+also available as <strong>mah.config.config.logging</strong>. See the
+<a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> section for details.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="mah.log.log">
+<code class="descclassname">mah.log.</code><code class="descname">log</code><em class="property"> = &lt;logging.Logger object&gt;</em><a class="headerlink" href="#mah.log.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>This instance is imported and used in various places in MAH.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mah.report">
+<span id="mah-report"></span><h2>mah.report<a class="headerlink" href="#module-mah.report" title="Permalink to this headline">¶</a></h2>
+<p>Enable sending of suspicious authentication reports to administrators.</p>
+<dl class="function">
+<dt id="mah.report.email_report">
+<code class="descclassname">mah.report.</code><code class="descname">email_report</code><span class="sig-paren">(</span><em>text</em>, <em>reporter_uid</em>, <em>auth</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.report.email_report" title="Permalink to this definition">¶</a></dt>
+<dd><p>A email a report of a suspicious authentication interaction.
+The destination email address, from address, subject and mail server is
+read from a configuration file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>text</strong> – the text of the report</li>
+<li><strong>reporter_uid</strong> – the uid (user id) of the reporter</li>
+<li><strong>auth</strong> – the authentication id (a uniquely identifying int)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mah.nato">
+<span id="mah-nato"></span><h2>mah.nato<a class="headerlink" href="#module-mah.nato" title="Permalink to this headline">¶</a></h2>
+<p>Nato alphabet mapping along with helper code to make the alphabet easy to use.
+Attempts to extract unknown NATO words will result in the unknown word being
+returned verbatim.</p>
+<p>NATO source: <a class="reference external" href="https://en.wikipedia.org/wiki/NATO_phonetic_alphabet">https://en.wikipedia.org/wiki/NATO_phonetic_alphabet</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mah.nato</span> <span class="k">import</span> <span class="n">NATO</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">NATO</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>
+<span class="go">&#39;Alpha&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">NATO</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<span class="go">&#39;Alpha&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">NATO</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span>
+<span class="go">&#39;Bravo&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">NATO</span><span class="p">[</span><span class="s1">&#39;.&#39;</span><span class="p">]</span>
+<span class="go">&#39;Decimal&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">NATO</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span>
+<span class="go">&#39;One&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">NATO</span><span class="p">[</span><span class="s1">&#39;blah&#39;</span><span class="p">]</span> <span class="c1"># Not a known NATO word</span>
+<span class="go">&#39;blah&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="module-mah.directory">
+<span id="mah-directory"></span><h2>mah.directory<a class="headerlink" href="#module-mah.directory" title="Permalink to this headline">¶</a></h2>
+<p>Base classes for directory services.</p>
+<dl class="class">
+<dt id="mah.directory.Directory">
+<em class="property">class </em><code class="descclassname">mah.directory.</code><code class="descname">Directory</code><a class="headerlink" href="#mah.directory.Directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class that directory modules should inherit from. Directory
+modules MUST expose their child class under the name ‘Directory’ -
+therefore, import this like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mah.directory</span> <span class="k">import</span> <span class="n">Directory</span> <span class="k">as</span> <span class="n">DirBase</span>
+
+<span class="k">class</span> <span class="nc">Directory</span><span class="p">(</span><span class="n">DirBase</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Or just refer to it by its full name like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mah.directory</span>
+
+<span class="k">class</span> <span class="nc">Directory</span><span class="p">(</span><span class="n">mah</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">Directory</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="mah.directory.Directory.config">
+<code class="descname">config</code><em class="property"> = None</em><a class="headerlink" href="#mah.directory.Directory.config" title="Permalink to this definition">¶</a></dt>
+<dd><p>The directory section of the main app configuration. cls.config is the
+same as mah.config.config.directory. This is None until the init
+classmethod is called successfully.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="mah.directory.Directory.init">
+<em class="property">classmethod </em><code class="descname">init</code><span class="sig-paren">(</span><em>config</em>, <em>src</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.directory.Directory.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do class level initialisation. Should ONLY be called by the mah.config
+package on startup. config will be the same as mah.config.directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>config</strong> – directory specific configuration object. Once
+configuration setup is complete, this will be available
+in <em>mah.config.config.directory</em>.</li>
+<li><strong>src</strong> – raw source config as read by ConfigParser</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mah.directory.Directory.search">
+<code class="descname">search</code><span class="sig-paren">(</span><em>query</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.directory.Directory.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search a staff directory for a staff member.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>query</strong> (<em>str</em>) – the query string to search with.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a list of Person (or a subclass) objects</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mah.directory.Directory.user">
+<code class="descname">user</code><span class="sig-paren">(</span><em>uid</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.directory.Directory.user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search a staff directory for a specific staff member.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>uid</strong> (<em>str</em>) – the user ID for a staff member to find.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a Person (or subclass) object or None</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#mah.directory.Person" title="mah.directory.Person">mah.directory.Person</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mah.directory.Person">
+<em class="property">class </em><code class="descclassname">mah.directory.</code><code class="descname">Person</code><span class="sig-paren">(</span><em>attributes</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.directory.Person" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple generic container to hold the information about a staff member.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mah.directory.ldap">
+<span id="mah-directory-ldap"></span><h2>mah.directory.ldap<a class="headerlink" href="#module-mah.directory.ldap" title="Permalink to this headline">¶</a></h2>
+<p>Use LDAP or AD for directory services.</p>
+<dl class="class">
+<dt id="mah.directory.ldap.Directory">
+<em class="property">class </em><code class="descclassname">mah.directory.ldap.</code><code class="descname">Directory</code><a class="headerlink" href="#mah.directory.ldap.Directory" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="classmethod">
+<dt id="mah.directory.ldap.Directory.init">
+<em class="property">classmethod </em><code class="descname">init</code><span class="sig-paren">(</span><em>config</em>, <em>src</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.directory.ldap.Directory.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expects the following configuration variables set:</p>
+<dl class="docutils">
+<dt><strong>ldap_filter</strong></dt>
+<dd>Fields to compare search strings against. Defaults to [‘uid’, ‘cn’]</dd>
+<dt><strong>ldap_size_limit</strong></dt>
+<dd>Maximum number of search results to return. Defaults to 250.</dd>
+<dt><strong>ldap_paged_size</strong></dt>
+<dd>Maximum number of search results per page. Defaults to None, which
+turns off paging.</dd>
+<dt><strong>ldap_time_limit</strong></dt>
+<dd>Maximum number of seconds a search should run for. Defaults to 15.</dd>
+<dt><strong>ldap_url</strong></dt>
+<dd><p class="first">LDAP connection URL of the form
+<strong>SCHEME</strong>://<strong>USER</strong>:<strong>PASS</strong> &#64; <strong>HOST</strong>:<strong>PORT</strong>/<strong>BASE</strong></p>
+<ul class="last simple">
+<li>If <strong>SCHEME</strong> is ldaps, SSL will be used.</li>
+<li><strong>USER</strong> and <strong>PASS</strong> are optional, and will be used as
+credentials.</li>
+<li><strong>HOST</strong> is the LDAP or AD host to connect to.</li>
+<li><strong>PORT</strong> is the port that the LDAP or AD service is listening on.
+By default this is 389</li>
+<li><strong>BASE</strong> is the LDAP search base, something akin to 
+<em>ou=users,dc=corp,dc=com</em></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mah.directory.ldap.Directory.search">
+<code class="descname">search</code><span class="sig-paren">(</span><em>query</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.directory.ldap.Directory.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search the LDAP or AD directory, comparing against the fields listed in
+mah.config.config.directory.ldap_filter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mah.directory.ldap.Directory.user">
+<code class="descname">user</code><span class="sig-paren">(</span><em>uid</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.directory.ldap.Directory.user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a specific user in the LDAP/AD directory.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mah.directory.ldap.Person">
+<em class="property">class </em><code class="descclassname">mah.directory.ldap.</code><code class="descname">Person</code><span class="sig-paren">(</span><em>data</em>, <em>attributes</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.directory.ldap.Person" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure all requested attributes are listed, even if they are set to None</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mah.authentication">
+<span id="mah-authentication"></span><h2>mah.authentication<a class="headerlink" href="#module-mah.authentication" title="Permalink to this headline">¶</a></h2>
+<p>Base classes for authentication services.</p>
+<dl class="class">
+<dt id="mah.authentication.Authentication">
+<em class="property">class </em><code class="descclassname">mah.authentication.</code><code class="descname">Authentication</code><a class="headerlink" href="#mah.authentication.Authentication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class that authentication modules should inherit from. Authentication
+modules MUST expose their child class under the name ‘Authentication’ -
+therefore, import this like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mah.authentication</span> <span class="k">import</span> <span class="n">Authentication</span> <span class="k">as</span> <span class="n">AuthBase</span>
+
+<span class="k">class</span> <span class="nc">Authentication</span><span class="p">(</span><span class="n">AuthBase</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Or just refer to it by its full name like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mah.authentication</span>
+
+<span class="k">class</span> <span class="nc">Authentication</span><span class="p">(</span><span class="n">mah</span><span class="o">.</span><span class="n">authentication</span><span class="o">.</span><span class="n">Authentication</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<dl class="classmethod">
+<dt id="mah.authentication.Authentication.authenticate">
+<em class="property">classmethod </em><code class="descname">authenticate</code><span class="sig-paren">(</span><em>form</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.authentication.Authentication.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>The main authentication method. Takes a form (a dict of form field names
+to string values), and uses the data therein to authenticate the user.
+Should return a tuple of the username and whether authentication was
+successful.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>form</strong> – A form object (dict-like) with fields entered by the user</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A 2-tuple of username (str) and success (bool)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.authentication.Authentication.config">
+<code class="descname">config</code><em class="property"> = None</em><a class="headerlink" href="#mah.authentication.Authentication.config" title="Permalink to this definition">¶</a></dt>
+<dd><p>The login section of the main app configuration. cls.config is the
+same as mah.config.config.login. This is None until the init classmethod is
+called successfully.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="mah.authentication.Authentication.for_production">
+<em class="property">static </em><code class="descname">for_production</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mah.authentication.Authentication.for_production" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this is a ‘dummy’ authentication method (like the built in ‘none’
+authentication module), this should return False - a warning will be
+displayed on the login page.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="mah.authentication.Authentication.init">
+<em class="property">classmethod </em><code class="descname">init</code><span class="sig-paren">(</span><em>config</em>, <em>src</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.authentication.Authentication.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise the authenticator. By default we make sure the username and
+password inputs are updated by the config, and we store the config for
+future use</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>config</strong> – login specific configuration object. Once configuration
+setup is complete, this will be available in
+<em>mah.config.config.login</em>.</li>
+<li><strong>src</strong> – raw source config as read by ConfigParser</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mah.authentication.Authentication.inputs">
+<code class="descname">inputs</code><em class="property"> = {'password': {'description': None, 'label': 'Password', 'name': 'password', 'order': 2, 'required': True, 'secret': True}, 'username': {'description': None, 'label': 'Username', 'name': 'username', 'order': 1, 'required': True, 'secret': False}}</em><a class="headerlink" href="#mah.authentication.Authentication.inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary of fields accepted by the authenticator. Each key should be a
+field name (ie, will be used in an &lt;input&gt; tag as the name attribute) with
+a value of a dict describing the key. That dict should have the following
+keys.</p>
+<dl class="docutils">
+<dt>name</dt>
+<dd>The name of the field (ie, identical to the key of this input).</dd>
+<dt>label</dt>
+<dd>Display name for the field. This should be changable in config by using
+a *_label configuration variable.</dd>
+<dt>secret</dt>
+<dd>If True, the field will be considered password-like and a type of
+‘password’ will be used for the &lt;input&gt; tag instead of ‘text’.</dd>
+<dt>required</dt>
+<dd>Boolean. Can be used to modify the interface, however the authenticator
+MUST check validity itself.</dd>
+<dt>description</dt>
+<dd>None, or a text string that will be displayed near the input to describe
+what is expected. This should be changable in config by using a
+*_description configuration variable.</dd>
+<dt>order</dt>
+<dd>A number defining in which order (ascending) the fields should be shown.
+If two fields have the same order, they will be sorted correctly in
+respect to all other fields, but will not be reliably ordered amongst
+themselves.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-mah.authentication.none">
+<span id="mah-authentication-none"></span><h2>mah.authentication.none<a class="headerlink" href="#module-mah.authentication.none" title="Permalink to this headline">¶</a></h2>
+<p>A debugging authentication method that doesn’t use any form of password - just
+a username</p>
+<dl class="class">
+<dt id="mah.authentication.none.Authentication">
+<em class="property">class </em><code class="descclassname">mah.authentication.none.</code><code class="descname">Authentication</code><a class="headerlink" href="#mah.authentication.none.Authentication" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="classmethod">
+<dt id="mah.authentication.none.Authentication.authenticate">
+<em class="property">classmethod </em><code class="descname">authenticate</code><span class="sig-paren">(</span><em>form</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.authentication.none.Authentication.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Always succeeds, and logs a ‘fake’ authentication.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="mah.authentication.none.Authentication.for_production">
+<em class="property">static </em><code class="descname">for_production</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mah.authentication.none.Authentication.for_production" title="Permalink to this definition">¶</a></dt>
+<dd><p>This authentication method is NOT for production use.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="mah.authentication.none.Authentication.init">
+<em class="property">classmethod </em><code class="descname">init</code><span class="sig-paren">(</span><em>config</em>, <em>src</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.authentication.none.Authentication.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes the ‘password’ input as it is not required.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-mah.authentication.radius">
+<span id="mah-authentication-radius"></span><h2>mah.authentication.radius<a class="headerlink" href="#module-mah.authentication.radius" title="Permalink to this headline">¶</a></h2>
+<p>A simple wrapper around the pyrad API to talk to radius authentication servers.</p>
+<dl class="class">
+<dt id="mah.authentication.radius.Authentication">
+<em class="property">class </em><code class="descclassname">mah.authentication.radius.</code><code class="descname">Authentication</code><a class="headerlink" href="#mah.authentication.radius.Authentication" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="classmethod">
+<dt id="mah.authentication.radius.Authentication.authenticate">
+<em class="property">classmethod </em><code class="descname">authenticate</code><span class="sig-paren">(</span><em>form</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.authentication.radius.Authentication.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Authenticates to the configured RADIUS server.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="mah.authentication.radius.Authentication.init">
+<em class="property">classmethod </em><code class="descname">init</code><span class="sig-paren">(</span><em>config</em>, <em>src</em><span class="sig-paren">)</span><a class="headerlink" href="#mah.authentication.radius.Authentication.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expects the following configuration variables set:</p>
+<dl class="docutils">
+<dt>radius_server</dt>
+<dd>The host or IP of the radius server to authenticate against.</dd>
+<dt>radius_secret</dt>
+<dd>The secret for connecting to the radius server</dd>
+<dt>radius_dictionary</dt>
+<dd>The attribute dictionary</dd>
+<dt>radius_nas_identifier</dt>
+<dd>The NAS identifier attribute</dd>
+<dt>radius_nas_ip_address</dt>
+<dd>The IP address attribute</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MAH - Mutual Authentication for Humans</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Mutual Authentication for Humans (MAH)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#configuration">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="configuration.html" title="previous chapter">Configuration</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Rob Lowe, Matthew Braid.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/code.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

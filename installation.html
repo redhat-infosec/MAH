@@ -1,0 +1,258 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Installation &#8212; MAH - Mutual Authentication for Humans 1.0.1
+ documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="Mutual Authentication for Humans (MAH)" href="README.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>MAH can be installed via packages or manually from source.</p>
+<div class="section" id="installation-requirements">
+<h2>Installation Requirements<a class="headerlink" href="#installation-requirements" title="Permalink to this headline">¶</a></h2>
+<p>The Mutual Authentication for Humans (MAH) requires numerous supporting
+software packages and services.</p>
+<ul class="simple">
+<li>The Python interpreter ‘python’ - installed by default. (MAH has been tested with both Python versions 2.6 and 2.7)</li>
+<li>A web server (e.g. Apache using WSGI)</li>
+<li>A database (e.g. MySQL)</li>
+<li>The <a class="reference external" href="http://flask.pocoo.org/">Flask</a> micro-framework, which in turn relies on <a class="reference external" href="http://werkzeug.pocoo.org/">Werkzeug</a> and <a class="reference external" href="http://jinja.pocoo.org/">Jinja 2</a> (<em>Important:</em> Jinja2 version must be 2.6 or higher).</li>
+<li>The <a class="reference external" href="http://www.sqlalchemy.org/">SQL Alchemy</a> SQL tool kit and Object Relational Mapper.</li>
+<li>SeaSurf, a CSRF protection wrapper for Flask.</li>
+<li>The Python Radius API, pyrad and Radius server which is configured to allow the system running MAH to be a NAS (Network Access Server).</li>
+<li>The Python LDAP API, ldap and (read-only) access to an LDAP directory.</li>
+</ul>
+</div>
+<div class="section" id="installation-instructions">
+<h2>Installation instructions<a class="headerlink" href="#installation-instructions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="manual-installation">
+<h3>Manual Installation<a class="headerlink" href="#manual-installation" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="pre-requisite-package-installation">
+<h4>Pre-requisite package installation<a class="headerlink" href="#pre-requisite-package-installation" title="Permalink to this headline">¶</a></h4>
+<p>1. Apache and MySQL (if needed) and allow connectivity to port 80/443.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm -P /rootwget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm</span>
+<span class="c1"># sudo rpm -ivh mysql-community-release-el7-5.noarch.rpmsudo rpm -ivh mysql-community-release-el7-5.noarch.rpm</span>
+<span class="c1"># yum install httpd mod_wsgi mysql-server MySQL-python</span>
+</pre></div>
+</div>
+<p>2. Install Flask, SQL Alchemy, pyrad, and ldap (and dependancies). Additional python packages will be installed by pip</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># yum install python-pip python-sqlalchemy</span>
+</pre></div>
+</div>
+<p>3. Install packages (not available as an rpm) via pip</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># pip install pyrad flask flask-sqlalchemy flask-seasurf six pip3</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="download-and-setup-mah">
+<h3>Download and setup MAH<a class="headerlink" href="#download-and-setup-mah" title="Permalink to this headline">¶</a></h3>
+<p>4. Download and extract the source tree from the git repository.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># wget https://&lt;source&gt;.tar.gz</span>
+<span class="c1"># tar xzf &lt;name&gt;.tar.gz</span>
+<span class="c1"># cd mah-*</span>
+</pre></div>
+</div>
+<p>5. Copy the mah code into the webserver directory.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># mkdir /var/www/wsgi/</span>
+<span class="c1"># cp -r {mah,mah.wsgi} /var/www/wsgi</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuring-the-web-server">
+<h3>Configuring the web server<a class="headerlink" href="#configuring-the-web-server" title="Permalink to this headline">¶</a></h3>
+<p>6. Install apache config</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cp mah.conf /etc/httpd/conf.d/</span>
+</pre></div>
+</div>
+<p>7. Add the following line to /etc/httpd/conf.d/wsgi.conf to prevent SElinux
+alerts, if required.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WSGISocketPrefix</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">wsgi</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setting-up-mysql">
+<h3>Setting up MySQL<a class="headerlink" href="#setting-up-mysql" title="Permalink to this headline">¶</a></h3>
+<p>8. Running the following MySQL commands as root (or similar DBA account)
+will set up the required tables.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">mysql</span><span class="o">&gt;</span> <span class="n">create</span> <span class="n">database</span> <span class="n">authdb</span><span class="p">;</span>
+ <span class="n">mysql</span><span class="o">&gt;</span> <span class="n">create</span> <span class="n">user</span> <span class="s1">&#39;auth&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">identified</span> <span class="n">by</span> <span class="s1">&#39;password&#39;</span><span class="p">;</span>
+ <span class="n">mysql</span><span class="o">&gt;</span> <span class="n">grant</span> <span class="nb">all</span> <span class="n">on</span> <span class="n">authdb</span><span class="o">.*</span> <span class="n">to</span> <span class="s1">&#39;auth&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+ <span class="n">mysql</span><span class="o">&gt;</span> <span class="n">flush</span> <span class="n">privileges</span><span class="p">;</span>
+
+<span class="c1">#useful commands: systemctl start mysqld.service; mysql_secure_installation; select * from authentication;</span>
+</pre></div>
+</div>
+<p>and this dictates the following configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">database</span><span class="p">]</span>
+<span class="n">connect</span> <span class="o">=</span> <span class="n">mysql</span><span class="p">:</span><span class="o">//</span><span class="n">auth</span><span class="p">:</span><span class="n">password1</span><span class="nd">@localhost</span><span class="o">/</span><span class="n">authdb</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="selinux-configuration">
+<h3>SELinux configuration<a class="headerlink" href="#selinux-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The folloing SE Linux policy modules are required for the application to
+initiate LDAP and SMTP connections.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">httpd_wsgi_socket</span> <span class="mf">1.0</span><span class="p">;</span>
+
+<span class="n">require</span> <span class="p">{</span>
+    <span class="nb">type</span> <span class="n">httpd_log_t</span><span class="p">;</span>
+    <span class="nb">type</span> <span class="n">httpd_t</span><span class="p">;</span>
+    <span class="k">class</span> <span class="nc">sock_file</span> <span class="n">create</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">#============= httpd_t ==============</span>
+<span class="n">allow</span> <span class="n">httpd_t</span> <span class="n">httpd_log_t</span><span class="p">:</span><span class="n">sock_file</span> <span class="n">create</span><span class="p">;</span>
+
+<span class="n">module</span> <span class="n">httpd_ldap_connect</span> <span class="mf">1.0</span><span class="p">;</span>
+
+<span class="n">require</span> <span class="p">{</span>
+    <span class="nb">type</span> <span class="n">ldap_port_t</span><span class="p">;</span>
+    <span class="nb">type</span> <span class="n">httpd_t</span><span class="p">;</span>
+    <span class="k">class</span> <span class="nc">tcp_socket</span> <span class="n">name_connect</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="c1">#============= httpd_t ==============</span>
+<span class="n">allow</span> <span class="n">httpd_t</span> <span class="n">ldap_port_t</span><span class="p">:</span><span class="n">tcp_socket</span> <span class="n">name_connect</span><span class="p">;</span>
+
+<span class="n">module</span> <span class="n">httpd_smtp_connect</span> <span class="mf">1.0</span><span class="p">;</span>
+
+<span class="n">require</span> <span class="p">{</span>
+    <span class="nb">type</span> <span class="n">httpd_t</span><span class="p">;</span>
+    <span class="nb">type</span> <span class="n">smtp_port_t</span><span class="p">;</span>
+    <span class="k">class</span> <span class="nc">tcp_socket</span> <span class="n">name_connect</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">allow</span> <span class="n">httpd_t</span> <span class="n">smtp_port_t</span><span class="p">:</span><span class="n">tcp_socket</span> <span class="n">name_connect</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="further-configuration">
+<h3>Further configuration<a class="headerlink" href="#further-configuration" title="Permalink to this headline">¶</a></h3>
+<p>Additional configuration of the applciation is recommended, particular the
+use of HTTPS, before Radius authentication is enabled.</p>
+<p>For a complete list of configuration options, please see the
+<a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> page.</p>
+</div>
+</div>
+<div class="section" id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+<p>Apache errors will be report, by default, in /var/log/http/error_log.
+Application errors will be reported in the MAH log file or via syslog (see
+<a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> page for details on the logging options).</p>
+<p>Running the application manually may provide additional debugging
+information:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">wsgi</span><span class="o">/</span><span class="n">mah</span><span class="o">/</span><span class="n">mah</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>This, by default, will start the application using the builtin Werkzeug
+http server, on localhost and port 5000 by default (editable in mah.conf)</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MAH - Mutual Authentication for Humans</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Mutual Authentication for Humans (MAH)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#configuration">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="README.html" title="previous chapter">Mutual Authentication for Humans (MAH)</a></li>
+      <li>Next: <a href="configuration.html" title="next chapter">Configuration</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Rob Lowe, Matthew Braid.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/installation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
