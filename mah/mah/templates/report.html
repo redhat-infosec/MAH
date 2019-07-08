@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Report something suspicious</h2>
+
+  <form action="{{ url_for('report') }}" method="POST">
+    If there is something that appears out of the ordinary or suspicious
+    when authenticating someone, you can report it here. Examples of
+    suspicious activity may be someone's failure to be able to read the
+    shared secret or noticing an authentication which you didn't initiate.
+    This message will be sent to *Admin* for further investigation.
+    <br><br>
+    {% if auth %}
+    You've selected the following event to flag as suspicious: <br><br>
+    <strong>
+    <input type="hidden" name="reported_auth_id" value="{{ auth.auth_id }}" />
+    {{ auth.source_uid }} ({{ auth.source_name }}) ->
+    {{ auth.dest_uid }} ({{ auth.dest_name }}), with an expiry of
+    {{ auth.expiry }} UTC
+    </strong>
+    <br><br>
+    If this is not the correct authentication, please <a href="{{
+    url_for('report') }}">click here</a> for a complete list of past
+    authentications.
+    <br><br>
+    {% elif all_auths|count > 0 %}
+      Please select the suspicious interaction from all past authentications:
+    <select name="reported_auth_id">
+      {% for auth in all_auths %}
+      <option value="{{ auth.auth_id }}">
+        {{ auth.source_uid }} ({{auth.source_name }}) ->
+        {{ auth.dest_uid }} ({{ auth.dest_name }}), expiry {{ auth.expiry }}
+        UTC
+      </option>
+      {% endfor %}
+    {% endif %}
+    Please include a reason as to why you are flagging this authentication
+    as suspicious:
+    <textarea cols="100%" rows=10 name="reason"></textarea>
+    <br>
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+    <input type="submit" value="Report" />
+  </form>
+{% endblock %}

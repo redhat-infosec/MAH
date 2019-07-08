@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if warning %}
+    <font class="bold">
+        IMPORTANT: This is a test system only and should not be used in production.
+    </font>
+    <br><br>
+  {% endif %}
+  <br>
+  This system is used to verify someone. For more information, see the <a href="{{ url_for('help') }}">help page</a>.
+  <form action="{{ url_for('login') }}" method="POST">
+    <table>
+      {% for input in inputs %}
+        <tr>
+          <td>{{ input.label }}:</td>
+          <td><input type="{{ 'password' if input.secret else 'text' }}" name="{{ input.name }}" /></td>
+          {% if 'description' in input and input.description != None %}
+            <td>{{ input.description }}</td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+      <tr>
+        <td></td>
+        <td>
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+          <input type="submit" value="Login" />
+        </td>
+      </tr>
+    </table>
+  </form>
+{% endblock %}

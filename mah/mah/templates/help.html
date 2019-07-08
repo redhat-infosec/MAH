@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<a name="intro"><h2>Introduction</h2></a>
+
+<p><strong>You receive a phone call from someone who claims to work with
+you and asks you about information that isn't public. How can you be sure
+that they are who they say they are and that they really do work for your company?</strong></p>
+
+<p>This system, <i>MAH Verification</i>, is designed to
+help. It enables you to verify that the person you are communicating with
+via email, telephone or IRC is the person they say they are and also company associate.</p>
+
+<p>It uses 2 factor authentication (PIN + token)
+to provide the strongest and most practical assurance that someone is a
+current company associate. It allows you to create a short authentication
+code for another associate. This authentication code is a constant or interval character
+hex-string, consisting of letters from a-f and numbers 0-9. By default,
+codes have a short lifetime (10 minutes).</p>
+
+<p><a name="authentication"><h2>The Process of Authentication</h2></a></p>
+
+<p>The system performs a one way authentication via a authentication code,
+as illustrated in the following example:</p>
+
+<ol>
+<li>Bob and Mary are based at different locations and are both members of
+a large project team.</li>
+<li>The project is confidential and they are under strict instructions not
+to discuss any details with anyone external to the project team.</li>
+<li>Bob calls Mary to ask some questions about the work Mary is doing on
+the project.</li>
+<li>Mary doesn't usually speak to Bob on the phone and doesn't recognise
+his voice.</li>
+<li>Mary logs in to
+<a href="{{ url_for('index') }}">the verification system</a>
+using her username and her PIN + token code.
+</li>
+<li>Mary searches for Bob and generates an authentication code for
+him.</li>
+<li>Mary says "Bob, before I discuss this information over the phone, I'd
+like to verify your identity, so I have authenticated you. Can you please
+read back the authentication code for me?"</li>
+<li>Bob also logs into
+<a href="{{ url_for('index') }}">the verification system</a>
+and sees the authentication from Mary and reads back the authentication
+code for Mary.
+</li>
+</ol>
+
+At this point, Mary has authenticated Bob, but Bob has not authenticated
+Mary.  If Bob wants to do that, he can create a new and different code that
+Mary will need to read back to him.
+
+<p><a name="search"><h2>Searching</h2></a></p>
+
+<p>Search terms must be longer than 2 characters and only contain
+alphanumeric characters (a-z A-Z 0-9). Searches are not case sensitive and
+peformed on the username (uid), full name and phone number fields of the
+staff directory. Currently, only the desk phone field is searched, not the
+home phone or mobile fields.
+
+<p>Wildcards and regular expressions are not accepted in search fields,
+but search terms are automatically wildcarded. For example, the search term
+"mark" would match users with a first name "Mark" or "Marko", or with a
+surname of "Denemark".
+
+<p><a name="report"><h2>Reporting Suspicious Authentications</h2></a></p>
+
+<p>If you attempt to authenticate someone and they are unable to complete
+it or they repeatedly fail to read back the correct authentication code,
+this may be cause for concern that "something isn't right". If you feel
+that there is something suspicious or strange about your interaction, then
+please <a href="{{ url_for('report') }}">report it</a>.
+</p>
+
+<p>You can also report suspicious interactions via the "flag a suspicious
+authentication" link in the top right hand corner of the page. Using this
+option, you will be prompted to select the specific authentication from a
+history of past authentications.</p>
+
+<p>You can also report a specific authentication as suspicious by clicking
+on the "flag as suspicious" link after that authentication. In all cases,
+there is a text box to provide more information, please use this to
+describe why this authentication was being reported. Please provide as much
+relevant information as you can.</p>
+
+<p><a name="hints"><h2>Hints</h2></a></p>
+
+<p><h3>Phonetic (NATO) hints for authentication codes</h3></p>
+
+<p>By hovering your mouse over the authentication code, you can see the
+code converted to the phonetic (NATO) alphabet. By using this, when reading
+out codes, it makes it easier to hear and understand codes, with less
+chance of confusion.</p>
+<img src="{{ url_for('static', filename='mah-phonetic.png') }}"></img>
+
+{% endblock %}
