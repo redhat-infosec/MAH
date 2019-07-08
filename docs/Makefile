@@ -7,7 +7,7 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = MAH-MutualAuthenticationforHumans
 SOURCEDIR     = source
 #BUILDDIR      = _build
-BUILDDIR      = ..
+BUILDDIR      = build
 
 # Put it first so that "make" without argument is like "make help".
 help:

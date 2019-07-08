@@ -2,7 +2,7 @@ templates = mah/templates/*
 static_files = mah/static/*
 sources = mah/*.py mah/mah.conf
 config = mah.conf mah.wsgi Makefile
-docsource = mah/doc/Makefile mah/doc/source
+docsource = docs/Makefile docs/source
 tarball = mah-$(shell cat VERSION).tar.gz
 rpmbuild = ~/rpmbuild
 
@@ -13,11 +13,11 @@ build: tarball mah.spec
 	rpmbuild -ba mah.spec
 
 docs: $(docsource)
-	make -C mah/doc text
-	cp mah/doc/build/text/README.txt README
+	make -C docs text
+	cp docs/build/text/README.txt README
 
 htmldocs: $(docsource)
-	make -C mah/doc html
+	make -C docs html
 
 tarball: $(sources) $(templates) $(static_files) $(config) AUTHORS VERSION mah.sql docs
 	tar czf $(tarball) $(sources) $(templates) $(static_files) $(config) README AUTHORS VERSION mah.sql
