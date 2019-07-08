@@ -26,7 +26,7 @@ author = u'Rob Lowe, Matthew Braid'
 # The short X.Y version
 version = u''
 try:
-    with open('../VERSION', 'rb') as fh:
+    with open('../../VERSION', 'rb') as fh:
         version = fh.read()
 except Exception:
     version = u'0.0.1'
