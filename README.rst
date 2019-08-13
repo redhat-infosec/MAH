@@ -3,12 +3,36 @@ MAH README version 1.0.1
 Mutual Authentication for Humans (MAH)
 ======================================
 
-This system allows a user to easily verify another user as an employee of
-the same organisation. It does this by allowing users to create a shared
-secret, a short text string. Access to this system should be allowed via a
-the strongest possible authentication mechanism available to an
-organisation, for example, RSA 2 factor tokens.
+You receive a phone call from someone who claims to work with you and asks
+you about sensitive company information. How can you be sure they are who
+they say they are?
 
+This system, Mutual Authentication for Humans (MAH), is designed to help.
+It enables you to verify that the person you are communicating with via
+unauthenticated communications channels (such as phone) is the person they
+claim to be and current employee of your organisation.
+
+The system uses the organization's 2 factor authentication system to
+provide the strongest and most practical assurance that someone is a
+current employee of that organziation. It allows you to create a short
+authentication code for another employee. By default, the authentication
+code is a short (e.g. 6) character hex-string, consisting of letters from
+a-f and numbers 0-9 and codes have a short lifetime (10 minutes).
+
+The system performs a one way authentication via a authentication code, as illustrated in the following example:
+
+1. Bob and Mary are based at different locations and are both members of a large project team.
+2. The project is confidential and they are under strict instructions not to discuss any details with anyone external to the project team.
+3. Bob calls Mary to ask some questions about the work Mary is doing on the project.
+4. Mary doesn't usually speak to Bob on the phone and doesn't recognise his voice.
+5. Mary logs in to the verification system using her username and her LinOTP PIN + token code.
+6. Mary searches for Bob and generates an authentication code for him.
+7. Mary says "Bob, before I discuss this information over the phone, I'd like to verify your identity, so I have authenticated you. Can you please read back the authentication code for me?"
+8. Bob also logs into the verification system and sees the authentication from Mary and reads back the authentication code for Mary.
+
+At this point, Mary has authenticated Bob, but Bob has not authenticated
+Mary. To authenticate Mary, Bob needs to create a new and different code that
+Mary will need to read back to him.
 
 Installation
 ============
