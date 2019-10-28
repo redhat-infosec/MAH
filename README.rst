@@ -76,7 +76,7 @@ Pre-requisite package installation
     # sudo rpm -ivh mysql-community-release-el7-5.noarch.rpmsudo rpm -ivh mysql-community-release-el7-5.noarch.rpm
     # yum install httpd mod_wsgi mysql-server MySQL-python
 
-2. Install Flask, SQL Alchemy, pyrad, and ldap (and dependancies). Additional python packages will be installed by pip
+2. Install Flask, SQL Alchemy, pyrad, and ldap (and dependencies). Additional python packages will be installed by pip
 ::
 
     # yum install python-pip python-sqlalchemy
@@ -603,4 +603,17 @@ The UDP port to send syslog messages to.
 
     syslog_port = 514
 
+Building the docs
+=================
 
+The included `Makefile` includes steps for building the docs. From the repositor root, run `make docs`
+ to build the documentation. Note that this will invoke a build of the application, so you will need
+ all the dependencies installed (see 'Pre-requisite package installation' above).
+
+To avoid installing dependencies locally, you can also use the included `build.Dockerfile` which will 
+prepare a minimal build environment.
+
+::
+
+    docker build -f build.Dockerfile -t mah-build .
+    docker run -v $PWD:/app mah-build htmldocs
